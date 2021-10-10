@@ -254,7 +254,9 @@ export const contactReducer = (state = initialState, action) => {
         contacts: [action.payload, ...state.contacts],
       };
     case GET_CONTACT:
-      let arr = state.contacts.filter(contact => contact.id === action.payload);
+      let arr = state.contacts.filter(
+        (contact) => contact.id === action.payload
+      );
       arr = arr.values();
       for (let val of arr) {
         arr = val;
@@ -265,9 +267,10 @@ export const contactReducer = (state = initialState, action) => {
       };
 
     case UPDATE_CONTACT:
+      console.log("action.payload", action.payload);
       return {
         ...state,
-        contacts: state.contacts.map(contact =>
+        contacts: state.contacts.map((contact) =>
           // eslint-disable-next-line
           contact.id == action.payload.id ? action.payload : contact
         ),
@@ -278,7 +281,7 @@ export const contactReducer = (state = initialState, action) => {
         ...state,
         contacts: state.contacts.filter(
           // eslint-disable-next-line
-          contact => contact.id != action.payload
+          (contact) => contact.id != action.payload
         ),
       };
 

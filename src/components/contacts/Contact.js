@@ -26,7 +26,7 @@ const Contact = ({ contact, selectAll }) => {
       <td>{email}</td>
       <td>{phone}</td>
       <td className="actions">
-        <Link to={`/contacts/edit/${id}`}>
+        <Link to={{ pathname: `/contacts/edit/${id}`, state: contact }}>
           <span className="material-icons mr-2 ">edit</span>
         </Link>
 

@@ -1,75 +1,75 @@
 const express = require("express");
 const mongoose = require("mongoose");
-const app = express()
-const cors = require("cors")
-const ContactModel = require("./model/contact.js")
+const app = express();
+const cors = require("cors");
+const ContactModel = require("./model/contact.js");
 
-mongoose.Promise = global.Promise;
+//mongoose.Promise = global.Promise;
 
 app.use(express.json());
-app.use(cors())
+app.use(cors());
 
-mongoose.connect(
-  "mongodb+srv://12345678pass:12345678pass@cluster0.yqfl0.mongodb.net/contactManagerApp?retryWrites=true&w=majority",
-  {
-    useNewUrlParser: true,
-  }
-);
+mongoose
+  .connect(
+    "mongodb+srv://12345678pass:12345678pass@cluster0.yqfl0.mongodb.net/contactManagerApp?retryWrites=true&w=majority",
 
-app.get("/read", async(req,res) => {
-  ContactModel.find({}, (err,result) => {
-    if(err)
     {
-      res(err)
+      useNewUrlParser: true,
+
+      // useUnifiedTopology: true,
     }
-    res.send(result)
-  })
-})
+  )
+  .then(() => console.log("database is connected"))
+  .catch((err) => console.log(err));
 
-app.post("/insert", async(req, res) => {
-  const id = req.body.id
-  const name =  req.body.name
-  const email = req.body.email
-  const contactNumber = req.body.contactNumber
-
-  const contact = new ContactModel(
-    {
-      name: name,
-      email: email,
-      contactNumber: contactNumber
+app.get("/read", async (req, res) => {
+  ContactModel.find({}, (err, result) => {
+    if (err) {
+      res(err);
     }
-  );
+    res.send(result);
+  });
+});
 
-  try{
+app.post("/insert", async (req, res) => {
+  const id = req.body.id;
+  const name = req.body.name;
+  const email = req.body.email;
+  const contactNumber = req.body.contactNumber;
+
+  const contact = new ContactModel({
+    id,
+    name: name,
+    email: email,
+    contactNumber: contactNumber,
+  });
+
+  try {
     await contact.save();
-  }
-  catch(err)
-  {
+  } catch (err) {
     console.log(err);
   }
 });
 
-app.put("/update", async(req, res) => {
-  const id = req.body.id
-  const newName =  req.body.name
-  const newEmail = req.body.email
-  const newContactNumber = req.body.contactNumber
+app.put("/update", async (req, res) => {
+  const id = req.body.id;
+  const newName = req.body.name;
+  const newEmail = req.body.email;
+  const newContactNumber = req.body.contactNumber;
 
-  try{
-    await ContactModel.findById(id, (err, updatedContact)=> {
-      updatedContact.name = newName
-      updatedContact.email = newEmail
-      updatedContact.contactNumber = newContactNumber
-      updatedContact.save()
-      res.send("update")
-    })
-  }
-  catch(err)
-  {
+  try {
+    await ContactModel.findById(id, (err, updatedContact) => {
+      updatedContact.name = newName;
+      updatedContact.email = newEmail;
+      updatedContact.contactNumber = newContactNumber;
+      updatedContact.save();
+      res.json({ status: "update", data: updatedContact });
+    });
+  } catch (err) {
     console.log(err);
   }
 });
 
-app.listen(3001, () => {
-  console.log("server running on port 3001");
-})
+app.listen(3002, () => {
+  console.log("server running on port 3002");
+});

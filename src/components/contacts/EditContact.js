@@ -1,22 +1,23 @@
 import React, { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { getContact, updateContact } from "../../actions/contactAction";
-import shortid from "shortid";
-import { useHistory } from "react-router-dom";
-import { useParams } from "react-router-dom";
+import { useHistory, useParams, useLocation } from "react-router-dom";
+import Axios from "axios";
 
 const EditContact = () => {
   let { id } = useParams();
+  const location = useLocation();
+  const contact = location?.state;
 
   let history = useHistory();
   const dispatch = useDispatch();
-  const contact = useSelector(state => state.contact.contact);
+  //const contact = useSelector((state) => state.contact.contact);
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
 
   useEffect(() => {
-    if (contact != null) {
+    if (contact) {
       setName(contact.name);
       setEmail(contact.email);
       setPhone(contact.phone);
@@ -24,15 +25,23 @@ const EditContact = () => {
     dispatch(getContact(id));
   }, [contact]);
 
-  const onUpdateContact = e => {
+  const onUpdateContact = (e) => {
     e.preventDefault();
 
-    const update_contact = Object.assign(contact, {
+    const update_contact = {
+      name,
+      email,
+      phone,
+      id: contact.id,
+    };
+
+    Axios.post("http://localhost:3002/update", {
       name: name,
       email: email,
-      phone: phone,
-    });
-
+      contactNumber: phone,
+    })
+      .then((res) => console.log("success", res))
+      .catch((err) => console.log(err));
     dispatch(updateContact(update_contact));
     history.push("/");
   };
@@ -40,14 +49,14 @@ const EditContact = () => {
     <div className="card border-1m shadow">
       <div className="card-header">Add a Contact</div>
       <div className="card-body">
-        <form onSubmit={e => onUpdateContact(e)}>
+        <form onSubmit={(e) => onUpdateContact(e)}>
           <div className="form-group">
             <input
               type="text"
               className="form-control"
               placeholder="Enter Your Name"
               value={name}
-              onChange={e => setName(e.target.value)}
+              onChange={(e) => setName(e.target.value)}
             />
           </div>
           <div className="form-group">
@@ -56,7 +65,7 @@ const EditContact = () => {
               className="form-control"
               placeholder="Enter Your Email Address"
               value={email}
-              onChange={e => setEmail(e.target.value)}
+              onChange={(e) => setEmail(e.target.value)}
             />
           </div>
           <div className="form-group">
@@ -65,7 +74,7 @@ const EditContact = () => {
               className="form-control"
               placeholder="Enter Your Phone Number"
               value={phone}
-              onChange={e => setPhone(e.target.value)}
+              onChange={(e) => setPhone(e.target.value)}
             />
           </div>
           <button className="btn btn-warning" type="submit">
